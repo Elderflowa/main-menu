@@ -1,0 +1,50 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Archive (unsigned)
+        run: |
+          xcodebuild archive \
+            -project MainMenu.xcodeproj \
+            -scheme MainMenu \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$PWD/build/MainMenu.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/MainMenu.xcarchive/Products/Applications/MainMenu.app Payload/
+          zip -qry MainMenu.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MainMenu-ipa
+          path: MainMenu.ipa
+
+      - name: Publish rolling release (direct link for Feather)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest MainMenu.ipa --title "Latest build" --notes "Unsigned IPA, sign it with Feather."
