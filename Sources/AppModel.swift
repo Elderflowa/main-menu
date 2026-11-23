@@ -10,13 +10,14 @@ final class AppModel: ObservableObject {
     }
     enum LibraryMode { case catalog, mine }
 
+    static let shared = AppModel()
     static let columns = 3
-    static let settingsCount = 8
+    static let settingsCount = 9
     static let catalogURL = URL(string: "https://raw.githubusercontent.com/Semmelstulle/ios-uri-schemes/main/game_list.json")!
 
     @Published var tab: Tab = .home
     @Published var games: [Game] = []
-    @Published var settings = AppSettings() { didSet { save() } }
+    @Published var settings = AppSettings() { didSet { save(); applyPower() } }
     @Published var homeIndex = 0
     @Published var libraryMode: LibraryMode = .catalog
     @Published var libIndex = 0
@@ -32,6 +33,10 @@ final class AppModel: ObservableObject {
     @Published var keyDraft = ""
     @Published var artStatus = "Run"
     private var fetchingArt = false
+    @Published var externalConnected = false { didSet { phoneAwake = false; applyPower() } }
+    @Published var phoneAwake = false
+    private var savedBrightness: CGFloat?
+    private var sleepTask: Task<Void, Never>?
 
     private var pad: PadMonitor?
     private var toastTask: Task<Void, Never>?
@@ -58,6 +63,8 @@ final class AppModel: ObservableObject {
     }
 
     // MARK: Derived
+
+    var showStandby: Bool { externalConnected && settings.dimOnExternal && !phoneAwake }
 
     var accent: Color { Color(hex: Theme.accents[min(settings.accent, Theme.accents.count - 1)]) }
     var tileWidth: CGFloat { [100, 122, 144][min(settings.tileSize, 2)] }
@@ -86,7 +93,8 @@ final class AppModel: ObservableObject {
          ("Start on last played", settings.startOnLast ? "On" : "Off", "play.circle.fill"),
          ("Refresh scheme list", catalogStatus, "arrow.clockwise"),
          ("SteamGridDB key", settings.sgdbKey.isEmpty ? "Not set" : "Set", "key.fill"),
-         ("Fetch game art", artStatus, "photo.fill")]
+         ("Fetch game art", artStatus, "photo.fill"),
+         ("Dim phone on display", settings.dimOnExternal ? "On" : "Off", "display")]
     }
 
     // MARK: Input
@@ -193,7 +201,8 @@ final class AppModel: ObservableObject {
         case 6:
             keyDraft = settings.sgdbKey
             keyAlert = true
-        default: Task { await fetchArt(force: true) }
+        case 7: Task { await fetchArt(force: true) }
+        default: settings.dimOnExternal.toggle()
         }
         tick()
     }
@@ -209,6 +218,29 @@ final class AppModel: ObservableObject {
         }
         save()
         Task { await fetchArt() }
+    }
+
+    /// Lowers brightness and keeps the screen awake while an external display is connected.
+    func applyPower(active: Bool = true) {
+        let saving = active && externalConnected && settings.dimOnExternal && !phoneAwake
+        UIApplication.shared.isIdleTimerDisabled = active && externalConnected
+        if saving {
+            if savedBrightness == nil { savedBrightness = UIScreen.main.brightness }
+            UIScreen.main.brightness = 0.02
+        } else if let b = savedBrightness {
+            UIScreen.main.brightness = b
+            savedBrightness = nil
+        }
+    }
+
+    func wakePhone() {
+        phoneAwake = true
+        applyPower()
+        sleepTask?.cancel()
+        sleepTask = Task {
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            if !Task.isCancelled { phoneAwake = false; applyPower() }
+        }
     }
 
     func saveKey() {

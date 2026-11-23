@@ -61,6 +61,7 @@ struct AppSettings: Codable, Equatable {
     var haptics: Bool = true
     var startOnLast: Bool = false
     var sgdbKey: String = ""
+    var dimOnExternal: Bool = true
 
     init() {}
 
@@ -72,6 +73,7 @@ struct AppSettings: Codable, Equatable {
         haptics = try c.decodeIfPresent(Bool.self, forKey: .haptics) ?? true
         startOnLast = try c.decodeIfPresent(Bool.self, forKey: .startOnLast) ?? false
         sgdbKey = try c.decodeIfPresent(String.self, forKey: .sgdbKey) ?? ""
+        dimOnExternal = try c.decodeIfPresent(Bool.self, forKey: .dimOnExternal) ?? true
     }
 }
 

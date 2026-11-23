@@ -5,6 +5,36 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
+            if app.showStandby {
+                StandbyView()
+            } else {
+                MainContent()
+            }
+        }
+        .statusBarHidden(true)
+        .persistentSystemOverlays(.hidden)
+        .alert("SteamGridDB API key", isPresented: $app.keyAlert) {
+            TextField("Paste your key", text: $app.keyDraft)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            Button("Save") { app.saveKey() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Get a free key at steamgriddb.com/profile/preferences/api")
+        }
+        .sheet(item: $app.editing) { target in
+            GameEditor(target: target)
+                .environmentObject(app)
+                .preferredColorScheme(.dark)
+        }
+    }
+}
+
+struct MainContent: View {
+    @EnvironmentObject var app: AppModel
+
+    var body: some View {
+        ZStack {
             Theme.bg.ignoresSafeArea()
             HStack(spacing: 0) {
                 Rail()
@@ -28,22 +58,24 @@ struct RootView: View {
             }
         }
         .animation(.easeOut(duration: 0.15), value: app.toast)
-        .statusBarHidden(true)
-        .persistentSystemOverlays(.hidden)
-        .alert("SteamGridDB API key", isPresented: $app.keyAlert) {
-            TextField("Paste your key", text: $app.keyDraft)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-            Button("Save") { app.saveKey() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Get a free key at steamgriddb.com/profile/preferences/api")
+    }
+}
+
+struct StandbyView: View {
+    @EnvironmentObject var app: AppModel
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack(spacing: 6) {
+                Image(systemName: "display").font(.system(size: 26))
+                Text("Main Menu is on your display").font(.system(size: 14))
+                Text("Tap to wake this screen for 20 seconds").font(.system(size: 11))
+            }
+            .foregroundStyle(Color.white.opacity(0.35))
         }
-        .sheet(item: $app.editing) { target in
-            GameEditor(target: target)
-                .environmentObject(app)
-                .preferredColorScheme(.dark)
-        }
+        .contentShape(Rectangle())
+        .onTapGesture { app.wakePhone() }
     }
 }
 

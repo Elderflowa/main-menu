@@ -134,7 +134,7 @@ struct SettingsView: View {
                             .padding(.horizontal, 10).padding(.vertical, 4)
                             .background(Theme.chip, in: Capsule())
                     }
-                    .padding(14)
+                    .padding(10)
                     .background(Theme.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .strokeBorder(i == app.settingsIndex ? app.accent : .clear, lineWidth: 2))
