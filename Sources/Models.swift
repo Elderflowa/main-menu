@@ -105,7 +105,7 @@ struct CatalogEntry: Identifiable, Hashable {
     func makeGame() -> Game {
         Game(name: name, genre: "", colorHex: Theme.colorHex(for: name), symbol: "gamecontroller.fill",
              iconURL: iconURL, uriScheme: schemes.first ?? "", altSchemes: Array(schemes.dropFirst()),
-             bundleID: bundleID, shortcutName: "", method: .auto)
+             bundleID: bundleID, shortcutName: name, method: .auto)
     }
 }
 

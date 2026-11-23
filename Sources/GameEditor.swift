@@ -31,6 +31,11 @@ struct GameEditor: View {
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     TextField("Shortcut name", text: $draft.shortcutName)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
+                    Button("Create this Shortcut in the Shortcuts app") {
+                        if let url = URL(string: "shortcuts://create-shortcut") { UIApplication.shared.open(url) }
+                    }
+                    Text("A Shortcut is only needed when the game has no URL scheme. In Shortcuts add the action Open App, pick the game, and name the Shortcut exactly like the name above.")
+                        .font(.footnote).foregroundStyle(.secondary)
                     TextField("Bundle ID (reference only)", text: $draft.bundleID)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     Button("Test launch") {

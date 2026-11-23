@@ -32,6 +32,9 @@ final class AppModel: ObservableObject {
     @Published var keyAlert = false
     @Published var keyDraft = ""
     @Published var artStatus = "Run"
+    @Published var storeResults: [CatalogEntry] = []
+    @Published var searching = false
+    private var searchTask: Task<Void, Never>?
     private var fetchingArt = false
     @Published var externalConnected = false { didSet { phoneAwake = false; applyPower() } }
     @Published var phoneAwake = false
@@ -76,7 +79,49 @@ final class AppModel: ObservableObject {
     var filteredCatalog: [CatalogEntry] {
         let q = query.trimmingCharacters(in: .whitespaces)
         if q.isEmpty { return catalog }
-        return catalog.filter { $0.name.localizedCaseInsensitiveContains(q) || $0.bundleID.localizedCaseInsensitiveContains(q) }
+        let local = catalog.filter { $0.name.localizedCaseInsensitiveContains(q) || $0.bundleID.localizedCaseInsensitiveContains(q) }
+        let known = Set(local.map { $0.id })
+        return local + storeResults.filter { !known.contains($0.id) }
+    }
+
+    private struct StoreResponse: Decodable {
+        struct Item: Decodable {
+            let trackName: String
+            let bundleId: String
+            let artworkUrl512: String?
+        }
+        let results: [Item]
+    }
+
+    /// Searches the App Store (iTunes Search API) so any installed game can be added, not only the ones in the scheme list.
+    func scheduleStoreSearch() {
+        searchTask?.cancel()
+        let q = query.trimmingCharacters(in: .whitespaces)
+        guard q.count >= 2 else { storeResults = []; searching = false; return }
+        searching = true
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            if Task.isCancelled { return }
+            var comps = URLComponents(string: "https://itunes.apple.com/search")!
+            comps.queryItems = [
+                URLQueryItem(name: "term", value: q),
+                URLQueryItem(name: "entity", value: "software"),
+                URLQueryItem(name: "limit", value: "20"),
+                URLQueryItem(name: "country", value: (Locale.current.region?.identifier ?? "US").lowercased()),
+            ]
+            var found: [CatalogEntry] = []
+            if let url = comps.url,
+               let (data, _) = try? await URLSession.shared.data(from: url),
+               let resp = try? JSONDecoder().decode(StoreResponse.self, from: data) {
+                found = resp.results.map { item in
+                    CatalogEntry(name: item.trackName, bundleID: item.bundleId, iconURL: item.artworkUrl512,
+                                 schemes: catalog.first { $0.bundleID == item.bundleId }?.schemes ?? [])
+                }
+            }
+            if Task.isCancelled { return }
+            storeResults = found
+            searching = false
+        }
     }
 
     var libraryCount: Int { libraryMode == .catalog ? filteredCatalog.count : games.count }

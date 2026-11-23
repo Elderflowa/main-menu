@@ -50,7 +50,7 @@ struct LibraryView: View {
                 if app.libraryMode == .catalog {
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass")
-                        TextField("Search apps", text: $app.query)
+                        TextField(app.searching ? "Searching the App Store…" : "Search the App Store", text: $app.query)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
@@ -68,7 +68,7 @@ struct LibraryView: View {
                             ForEach(Array(app.filteredCatalog.enumerated()), id: \.element.id) { i, e in
                                 let added = app.isAdded(e)
                                 LibraryCell(title: e.name,
-                                        subtitle: e.schemes.first ?? "No URL scheme",
+                                        subtitle: e.schemes.first ?? "No URL scheme, uses a Shortcut",
                                         symbol: "gamecontroller.fill", iconURL: e.iconURL,
                                         colorHex: Theme.colorHex(for: e.name),
                                         chip: added ? "Added" : "Add", chipOn: added,
@@ -93,7 +93,10 @@ struct LibraryView: View {
                 }
             }
         }
-        .onChange(of: app.query) { _, _ in app.libIndex = 0 }
+        .onChange(of: app.query) { _, _ in
+            app.libIndex = 0
+            app.scheduleStoreSearch()
+        }
         .padding(.bottom, 4)
     }
 
