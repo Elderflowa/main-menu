@@ -19,6 +19,7 @@ struct Game: Identifiable, Codable, Hashable {
     var colorHex: String = "4A74E0"
     var symbol: String = "gamecontroller.fill"
     var iconURL: String? = nil
+    var artURL: String? = nil
     var uriScheme: String = ""
     var altSchemes: [String] = []
     var bundleID: String = ""
@@ -59,6 +60,19 @@ struct AppSettings: Codable, Equatable {
     var showStats: Bool = true
     var haptics: Bool = true
     var startOnLast: Bool = false
+    var sgdbKey: String = ""
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        accent = try c.decodeIfPresent(Int.self, forKey: .accent) ?? 0
+        tileSize = try c.decodeIfPresent(Int.self, forKey: .tileSize) ?? 1
+        showStats = try c.decodeIfPresent(Bool.self, forKey: .showStats) ?? true
+        haptics = try c.decodeIfPresent(Bool.self, forKey: .haptics) ?? true
+        startOnLast = try c.decodeIfPresent(Bool.self, forKey: .startOnLast) ?? false
+        sgdbKey = try c.decodeIfPresent(String.self, forKey: .sgdbKey) ?? ""
+    }
 }
 
 struct Persisted: Codable {

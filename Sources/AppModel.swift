@@ -11,7 +11,7 @@ final class AppModel: ObservableObject {
     enum LibraryMode { case catalog, mine }
 
     static let columns = 3
-    static let settingsCount = 6
+    static let settingsCount = 8
     static let catalogURL = URL(string: "https://raw.githubusercontent.com/Semmelstulle/ios-uri-schemes/main/game_list.json")!
 
     @Published var tab: Tab = .home
@@ -28,6 +28,10 @@ final class AppModel: ObservableObject {
     @Published var toast: Toast?
     @Published var controllerName: String?
     @Published var controllerBattery: Int?
+    @Published var keyAlert = false
+    @Published var keyDraft = ""
+    @Published var artStatus = "Run"
+    private var fetchingArt = false
 
     private var pad: PadMonitor?
     private var toastTask: Task<Void, Never>?
@@ -50,12 +54,13 @@ final class AppModel: ObservableObject {
                     self?.controllerBattery = battery
                 }
             })
+        if !settings.sgdbKey.isEmpty { Task { await fetchArt() } }
     }
 
     // MARK: Derived
 
     var accent: Color { Color(hex: Theme.accents[min(settings.accent, Theme.accents.count - 1)]) }
-    var tileWidth: CGFloat { [96, 120, 144][min(settings.tileSize, 2)] }
+    var tileWidth: CGFloat { [100, 122, 144][min(settings.tileSize, 2)] }
 
     var selectedGame: Game? {
         games.indices.contains(homeIndex) ? games[homeIndex] : nil
@@ -79,14 +84,16 @@ final class AppModel: ObservableObject {
          ("Show launch stats", settings.showStats ? "On" : "Off", "clock.fill"),
          ("Haptic ticks", settings.haptics ? "On" : "Off", "iphone.radiowaves.left.and.right"),
          ("Start on last played", settings.startOnLast ? "On" : "Off", "play.circle.fill"),
-         ("Refresh scheme list", catalogStatus, "arrow.clockwise")]
+         ("Refresh scheme list", catalogStatus, "arrow.clockwise"),
+         ("SteamGridDB key", settings.sgdbKey.isEmpty ? "Not set" : "Set", "key.fill"),
+         ("Fetch game art", artStatus, "photo.fill")]
     }
 
     // MARK: Input
 
     func handle(_ input: PadInput) {
-        if editing != nil {
-            if input == .b { editing = nil }
+        if editing != nil || keyAlert {
+            if input == .b { editing = nil; keyAlert = false }
             return
         }
         switch input {
@@ -158,6 +165,7 @@ final class AppModel: ObservableObject {
                 games.append(entry.makeGame())
             }
             save()
+            Task { await fetchArt() }
         } else if games.indices.contains(libIndex) {
             editing = EditTarget(game: games[libIndex], isNew: false)
         }
@@ -181,7 +189,11 @@ final class AppModel: ObservableObject {
         case 2: settings.showStats.toggle()
         case 3: settings.haptics.toggle()
         case 4: settings.startOnLast.toggle()
-        default: Task { await refreshCatalog() }
+        case 5: Task { await refreshCatalog() }
+        case 6:
+            keyDraft = settings.sgdbKey
+            keyAlert = true
+        default: Task { await fetchArt(force: true) }
         }
         tick()
     }
@@ -196,6 +208,33 @@ final class AppModel: ObservableObject {
             games[i] = game
         }
         save()
+        Task { await fetchArt() }
+    }
+
+    func saveKey() {
+        settings.sgdbKey = keyDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !settings.sgdbKey.isEmpty { Task { await fetchArt(force: true) } } else { artStatus = "Run" }
+    }
+
+    func fetchArt(force: Bool = false) async {
+        let key = settings.sgdbKey
+        guard !key.isEmpty else { artStatus = "No key"; return }
+        guard !fetchingArt else { return }
+        let todo = games.filter { force || $0.artURL == nil }.map { ($0.id, $0.name) }
+        guard !todo.isEmpty else { artStatus = "Up to date"; return }
+        fetchingArt = true
+        artStatus = "Fetching…"
+        var found = 0
+        for (id, name) in todo {
+            guard let art = await SteamGridDB.art(for: name, key: key) else { continue }
+            if let i = games.firstIndex(where: { $0.id == id }) {
+                if let p = art.poster { games[i].artURL = p; found += 1 }
+                if games[i].iconURL == nil, let ic = art.icon { games[i].iconURL = ic }
+                save()
+            }
+        }
+        fetchingArt = false
+        artStatus = "Found \(found) of \(todo.count)"
     }
 
     func delete(_ game: Game) {

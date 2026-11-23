@@ -26,6 +26,10 @@ A controller-first game launcher for iPhone, built for landscape. Add your games
 
 Touch works everywhere too. Text fields in the editor and the catalog search need the on-screen keyboard.
 
+## Game art
+
+Main Menu can fetch poster art for your games from [SteamGridDB](https://www.steamgriddb.com). Create a free API key at steamgriddb.com/profile/preferences/api, then open Settings, choose "SteamGridDB key" and paste it. Art is looked up by game name, shown on the Home tiles, and fetched again whenever you add a game. "Fetch game art" in Settings re-runs the lookup. The key and the image links stay on your device and are never part of this repository.
+
 ## How launching works
 
 iOS doesn't let a sideloaded app launch other apps by bundle ID. Main Menu uses what is allowed:

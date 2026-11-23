@@ -141,7 +141,7 @@ struct SettingsView: View {
                     .onTapGesture { app.settingsIndex = i; app.changeSetting(1) }
                 }
             }
-            Text("URL scheme data: Semmelstulle/ios-uri-schemes, CC BY 4.0")
+            Text("Scheme data: Semmelstulle/ios-uri-schemes (CC BY 4.0). Game art: SteamGridDB.")
                 .font(.system(size: 11))
                 .foregroundStyle(Theme.muted)
                 .padding(.top, 4)

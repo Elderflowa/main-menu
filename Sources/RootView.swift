@@ -30,6 +30,15 @@ struct RootView: View {
         .animation(.easeOut(duration: 0.15), value: app.toast)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
+        .alert("SteamGridDB API key", isPresented: $app.keyAlert) {
+            TextField("Paste your key", text: $app.keyDraft)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            Button("Save") { app.saveKey() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Get a free key at steamgriddb.com/profile/preferences/api")
+        }
         .sheet(item: $app.editing) { target in
             GameEditor(target: target)
                 .environmentObject(app)
