@@ -69,6 +69,28 @@ struct GameEditor: View {
                         }
                     }
                 }
+                Section("Art") {
+                    if app.settings.sgdbKey.isEmpty {
+                        Text("Add a SteamGridDB key in Settings to pick game art.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    } else {
+                        NavigationLink {
+                            ArtPicker(selected: $draft.artURL, term: draft.name)
+                        } label: {
+                            HStack {
+                                Text("Choose game art")
+                                Spacer()
+                                if let s = draft.artURL, let url = URL(string: s) {
+                                    AsyncImage(url: url) { phase in
+                                        if let image = phase.image { image.resizable().scaledToFill() } else { Color.gray.opacity(0.3) }
+                                    }
+                                    .frame(width: 30, height: 42)
+                                    .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                                }
+                            }
+                        }
+                    }
+                }
                 if !isNew {
                     Section {
                         Button("Remove from Main Menu", role: .destructive) {
