@@ -48,7 +48,7 @@ struct Game: Identifiable, Codable, Hashable {
         Game(name: "Hollow Knight", genre: "Metroidvania", colorHex: "586178", symbol: "moon.stars.fill",
              shortcutName: "Hollow Knight"),
         Game(name: "Teamfight Tactics", genre: "Auto battler", colorHex: "C58A2C", symbol: "crown.fill",
-             shortcutName: "TFT"),
+             shortcutName: "Teamfight Tactics"),
         Game(name: "Balatro", genre: "Roguelike deckbuilder", colorHex: "C44741", symbol: "suit.spade.fill",
              shortcutName: "Balatro"),
     ]

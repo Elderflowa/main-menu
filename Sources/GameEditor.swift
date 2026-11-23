@@ -29,12 +29,12 @@ struct GameEditor: View {
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     TextField("Alternative schemes, comma separated", text: $alts)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
-                    TextField("Shortcut name", text: $draft.shortcutName)
+                    TextField("App name for the Shortcut", text: $draft.shortcutName)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
-                    Button("Create this Shortcut in the Shortcuts app") {
+                    Button("Set up the Main Menu Launch Shortcut") {
                         if let url = URL(string: "shortcuts://create-shortcut") { UIApplication.shared.open(url) }
                     }
-                    Text("A Shortcut is only needed when the game has no URL scheme. In Shortcuts add the action Open App, pick the game, and name the Shortcut exactly like the name above.")
+                    Text("Games without a URL scheme open through one Shortcut named Main Menu Launch, made once for all games. Add the action Open App, set its app to the Shortcut Input variable, and name the Shortcut exactly Main Menu Launch. The app name above must match the name under the game's icon on your Home Screen.")
                         .font(.footnote).foregroundStyle(.secondary)
                     TextField("Bundle ID (reference only)", text: $draft.bundleID)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()

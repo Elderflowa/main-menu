@@ -39,9 +39,9 @@ Plug the phone into a monitor over USB-C (or use AirPlay) and Main Menu renders 
 iOS doesn't let a sideloaded app launch other apps by bundle ID. Main Menu uses what is allowed:
 
 1. **URL scheme**, for example `genshin://`. No banner and no extra app.
-2. **Shortcut**, using `shortcuts://run-shortcut?name=...`. Make a Shortcut with an "Open App" action and put its name in the game's settings.
+2. **One Shortcut for everything else.** Make a Shortcut named `Main Menu Launch` with a single action, Open App, and set its app to the Shortcut Input variable. Main Menu runs it with `shortcuts://run-shortcut?name=Main%20Menu%20Launch&input=text&text=<app name>`, so every game without a URL scheme works through the same Shortcut. Each game's "App name for the Shortcut" has to match the name under its icon on your Home Screen.
 
-Most games don't register a URL scheme, so Shortcuts is the fallback. The catalog includes `genshin://`. Hollow Knight, TFT and Balatro start with Shortcut names that you can change in the editor.
+Most games don't register a URL scheme, so the shared Shortcut is the fallback. The catalog includes `genshin://`. Hollow Knight, Teamfight Tactics and Balatro start with their app names, which you can change in the editor.
 
 ## Build the IPA
 

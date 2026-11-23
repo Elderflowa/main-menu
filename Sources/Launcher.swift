@@ -1,6 +1,9 @@
 import UIKit
 
 enum Launcher {
+    /// One Shortcut the user creates once. It receives an app name as text and runs Open App with it.
+    static let universalShortcut = "Main Menu Launch"
+
     private static func normalized(_ scheme: String) -> URL? {
         let s = scheme.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !s.isEmpty else { return nil }
@@ -27,9 +30,13 @@ enum Launcher {
             var comps = URLComponents()
             comps.scheme = "shortcuts"
             comps.host = "run-shortcut"
-            comps.queryItems = [URLQueryItem(name: "name", value: shortcut)]
+            comps.queryItems = [
+                URLQueryItem(name: "name", value: universalShortcut),
+                URLQueryItem(name: "input", value: "text"),
+                URLQueryItem(name: "text", value: shortcut),
+            ]
             if let url = comps.url, await open(url) {
-                return "Shortcut \"\(shortcut)\""
+                return "Shortcut for \(shortcut)"
             }
         }
         return nil

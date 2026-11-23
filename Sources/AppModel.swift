@@ -333,7 +333,7 @@ final class AppModel: ObservableObject {
                 }
             } else {
                 showToast(Toast(title: "Couldn't open \(game.name)",
-                                subtitle: "Check the URL scheme or Shortcut name. Press Y to edit.",
+                                subtitle: "Check the URL scheme, or the app name and the Main Menu Launch Shortcut. Press Y to edit.",
                                 symbol: "exclamationmark.triangle.fill", colorHex: "8A2F2F"), seconds: 3)
             }
         }
