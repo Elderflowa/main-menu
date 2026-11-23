@@ -5,6 +5,11 @@ on:
     branches: [main]
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Version to publish as a tagged release, for example 1.2.0 (leave empty for a normal build)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -24,6 +29,8 @@ jobs:
           BASE=$(grep -m1 'MARKETING_VERSION:' project.yml | sed 's/.*"\(.*\)".*/\1/')
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             V="${GITHUB_REF_NAME#v}"
+          elif [[ -n "${{ inputs.release_version }}" ]]; then
+            V="${{ inputs.release_version }}"
           else
             V="$BASE.${{ github.run_number }}"
           fi
@@ -59,14 +66,16 @@ jobs:
           path: MainMenu.ipa
 
       - name: Publish tagged release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_version != ''
         run: |
-          gh release create "$GITHUB_REF_NAME" MainMenu.ipa \
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then TAG="v${{ inputs.release_version }}"; fi
+          gh release create "$TAG" MainMenu.ipa --target "$GITHUB_SHA" \
             --title "Main Menu ${{ steps.ver.outputs.version }}" \
             --notes "Unsigned IPA, sign it with Feather. Console-style home, SteamGridDB art picker, App Store search, external display with dimmed phone screen, and one shared Shortcut for games without a URL scheme."
 
       - name: Publish rolling release (direct link for Feather)
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.release_version == '' }}
         run: |
           gh release view latest >/dev/null 2>&1 || gh release create latest --prerelease --title "Latest build" --notes "Unsigned IPA from the newest commit, sign it with Feather."
           gh release upload latest MainMenu.ipa --clobber
