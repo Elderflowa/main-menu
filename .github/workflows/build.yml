@@ -72,7 +72,7 @@ jobs:
           if [[ "$GITHUB_REF" != refs/tags/v* ]]; then TAG="v${{ inputs.release_version }}"; fi
           gh release create "$TAG" MainMenu.ipa --target "$GITHUB_SHA" \
             --title "Main Menu ${{ steps.ver.outputs.version }}" \
-            --notes "Unsigned IPA, sign it with Feather. Console-style home, SteamGridDB art picker, App Store search, external display with dimmed phone screen, and one shared Shortcut for games without a URL scheme."
+            --notes-file RELEASE_NOTES.md
 
       - name: Publish rolling release (direct link for Feather)
         if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.release_version == '' }}
