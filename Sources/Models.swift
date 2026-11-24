@@ -20,6 +20,8 @@ struct Game: Identifiable, Codable, Hashable {
     var symbol: String = "gamecontroller.fill"
     var iconURL: String? = nil
     var artURL: String? = nil
+    /// True once the user picked art by hand; automatic fetching never touches it.
+    var artManual: Bool? = nil
     var uriScheme: String = ""
     var altSchemes: [String] = []
     var bundleID: String = ""

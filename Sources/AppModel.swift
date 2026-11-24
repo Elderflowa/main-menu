@@ -279,7 +279,14 @@ final class AppModel: ObservableObject {
             games.append(game)
             homeIndex = games.count - 1
         } else if let i = games.firstIndex(where: { $0.id == game.id }) {
-            games[i] = game
+            var g = game
+            let old = games[i]
+            if g.artURL != old.artURL, g.artURL != nil, old.artManual != true {
+                g.artManual = true            // picked by hand in the editor
+            } else if g.artURL == nil {
+                g.artManual = nil             // "Use automatic art"
+            }
+            games[i] = g
         }
         save()
         Task { await fetchArt() }
@@ -339,7 +346,7 @@ final class AppModel: ObservableObject {
         let key = settings.sgdbKey
         guard !key.isEmpty else { artStatus = "No key"; return }
         guard !fetchingArt else { return }
-        let todo = games.filter { force || $0.artURL == nil }.map { ($0.id, $0.name) }
+        let todo = games.filter { $0.artManual != true && (force || $0.artURL == nil) }.map { ($0.id, $0.name) }
         guard !todo.isEmpty else { artStatus = "Up to date"; return }
         fetchingArt = true
         artStatus = "Fetching…"
@@ -347,7 +354,7 @@ final class AppModel: ObservableObject {
         for (id, name) in todo {
             guard let art = await SteamGridDB.art(for: name, key: key) else { continue }
             if let i = games.firstIndex(where: { $0.id == id }) {
-                if let p = art.poster { games[i].artURL = p; found += 1 }
+                if games[i].artManual != true, let p = art.poster { games[i].artURL = p; found += 1 }
                 if games[i].iconURL == nil, let ic = art.icon { games[i].iconURL = ic }
                 save()
             }

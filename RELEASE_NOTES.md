@@ -1,8 +1,12 @@
-## Main Menu 1.2.2
+## Main Menu 1.2.3
 
 A controller-first game launcher for iPhone, built for landscape.
 
-### What's new in 1.2.2
+### What's new in 1.2.3
+- **Art you pick by hand now stays.** Automatic art fetching (including "Fetch game art" and saving the API key) never overwrites it. Choose "Use automatic art" in the picker to go back.
+- **My games tab fixed.** It no longer shows catalog rows.
+
+### Also in 1.2.2
 - **Touch controls.** Tap a game to launch it. Press and hold a game (on Home or in My games) for a menu with Launch, Edit and Remove.
 
 ### Also in 1.2.1
