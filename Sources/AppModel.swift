@@ -35,6 +35,7 @@ final class AppModel: ObservableObject {
     @Published var artStatus = "Run"
     @Published var storeResults: [CatalogEntry] = []
     @Published var searching = false
+    @Published var storeStatus = ""
     private var searchTask: Task<Void, Never>?
     private var fetchingArt = false
     @Published var externalConnected = false { didSet { phoneAwake = false; applyPower() } }
@@ -98,8 +99,9 @@ final class AppModel: ObservableObject {
     func scheduleStoreSearch() {
         searchTask?.cancel()
         let q = query.trimmingCharacters(in: .whitespaces)
-        guard q.count >= 2 else { storeResults = []; searching = false; return }
+        guard q.count >= 2 else { storeResults = []; searching = false; storeStatus = ""; return }
         searching = true
+        storeStatus = "Searching the App Store…"
         searchTask = Task {
             try? await Task.sleep(nanoseconds: 400_000_000)
             if Task.isCancelled { return }
@@ -111,16 +113,21 @@ final class AppModel: ObservableObject {
                 URLQueryItem(name: "country", value: (Locale.current.region?.identifier ?? "US").lowercased()),
             ]
             var found: [CatalogEntry] = []
-            if let url = comps.url,
-               let (data, _) = try? await URLSession.shared.data(from: url),
-               let resp = try? JSONDecoder().decode(StoreResponse.self, from: data) {
-                found = resp.results.map { item in
-                    CatalogEntry(name: item.trackName, bundleID: item.bundleId, iconURL: item.artworkUrl512,
-                                 schemes: catalog.first { $0.bundleID == item.bundleId }?.schemes ?? [])
+            var status = "Couldn't reach the App Store"
+            if let url = comps.url, let (data, _) = try? await URLSession.shared.data(from: url) {
+                if let resp = try? JSONDecoder().decode(StoreResponse.self, from: data) {
+                    found = resp.results.map { item in
+                        CatalogEntry(name: item.trackName, bundleID: item.bundleId, iconURL: item.artworkUrl512,
+                                     schemes: catalog.first { $0.bundleID == item.bundleId }?.schemes ?? [])
+                    }
+                    status = "App Store: \(found.count) result\(found.count == 1 ? "" : "s")"
+                } else {
+                    status = "Couldn't read the App Store response"
                 }
             }
             if Task.isCancelled { return }
             storeResults = found
+            storeStatus = status
             searching = false
         }
     }

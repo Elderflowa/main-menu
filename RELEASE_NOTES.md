@@ -1,8 +1,12 @@
-## Main Menu 1.2.0
+## Main Menu 1.2.1
 
 A controller-first game launcher for iPhone, built for landscape.
 
-### What's new
+### What's new in 1.2.1
+- **Shortcut setup guide** in Settings, with a one-tap install of the shared `Main Menu Launch` Shortcut, a button to build it yourself, and a test button.
+- The App Store search in the Library now shows what it is doing (searching, number of results, or an error).
+
+### What's new since 1.1
 - **Console-style home.** A single row of game tiles, big poster art, and the selected game's name and launch method underneath.
 - **Game art from SteamGridDB.** Paste a free API key in Settings and posters are fetched automatically. In a game's editor, "Choose game art" lets you search a title and pick a different poster.
 - **Search the whole App Store** from the Library to add any game, not only the ones in the URL scheme list.

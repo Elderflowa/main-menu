@@ -46,6 +46,9 @@ struct LibraryView: View {
             HStack(spacing: 8) {
                 modeChip("Catalog", .catalog)
                 modeChip("My games", .mine)
+                if app.libraryMode == .catalog && !app.storeStatus.isEmpty {
+                    Text(app.storeStatus).font(.system(size: 11)).foregroundStyle(Theme.muted).lineLimit(1)
+                }
                 Spacer()
                 if app.libraryMode == .catalog {
                     HStack(spacing: 6) {
