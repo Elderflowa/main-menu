@@ -76,7 +76,7 @@ struct LibraryView: View {
                                         colorHex: Theme.colorHex(for: e.name),
                                         chip: added ? "Added" : "Add", chipOn: added,
                                         selected: i == app.libIndex)
-                                    .id(i)
+                                    .id("c\(i)")
                                     .onTapGesture { app.libIndex = i; app.activateLibrary() }
                             }
                         } else {
@@ -84,7 +84,7 @@ struct LibraryView: View {
                                 LibraryCell(title: g.name, subtitle: g.methodSummary,
                                         symbol: g.symbol, iconURL: g.iconURL, colorHex: g.colorHex,
                                         chip: "Edit", chipOn: false, selected: i == app.libIndex)
-                                    .id(i)
+                                    .id("m\(i)")
                                     .onTapGesture { app.libIndex = i; app.activateLibrary() }
                                     .contextMenu {
                                         Button { app.editing = EditTarget(game: g, isNew: false) } label: { Label("Edit", systemImage: "pencil") }
@@ -94,10 +94,11 @@ struct LibraryView: View {
                         }
                     }
                     .padding(.vertical, 4)
-                    .id(app.libraryMode)
+                    .id(app.libraryMode == .catalog ? "grid-catalog" : "grid-mine")
                 }
+                .id(app.libraryMode == .catalog ? "scroll-catalog" : "scroll-mine")
                 .onChange(of: app.libIndex) { _, new in
-                    withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(new, anchor: .center) }
+                    withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo((app.libraryMode == .catalog ? "c" : "m") + "\(new)", anchor: .center) }
                 }
             }
         }
