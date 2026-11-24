@@ -4,7 +4,7 @@ Read this first. It describes what Main Menu is, how it is built and released, h
 
 ## Rules for this repo
 
-- **Commits:** author name `Elder`, email `Elderflowa@users.noreply.github.com`. Never put the maintainer's real name in commits, code, docs or release notes. Set it with `git config user.name "Elder"` and `git config user.email "Elderflowa@users.noreply.github.com"`.
+- **Commits:** Commit with your own GitHub account (use your local `git config user.name` / `git config user.email`). Do not use a noreply address or hardcode anyone's identity.
 - **No secrets.** The SteamGridDB API key is typed by the user inside the app and stored on the device only. Never hardcode keys, tokens or personal data.
 - There may be no Swift toolchain in your environment (the original author had none). Changes are compile-checked only by CI, so write conservative Swift and read the build log after pushing.
 - Keep the visual style: dark, controller-first, landscape.
