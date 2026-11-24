@@ -1,8 +1,11 @@
-## Main Menu 1.3.0
+## Main Menu 1.3.1
 
 A controller-first game launcher for iPhone, built for landscape.
 
-### What's new in 1.3.0
+### What's new in 1.3.1
+- Home tiles no longer slide under the sidebar, and the small caption under the game title is gone.
+
+### Also in 1.3.0
 - **Find URL schemes on this phone.** In a game's editor, tap the button to check a list of likely schemes (Hollow Knight, Balatro, Riot, HoYoverse and more) and see which ones your installed apps answer to. Tap one to use it, then Test launch. This gives launching without the Shortcut when a game has a hidden scheme.
 
 ### Also in 1.2.3

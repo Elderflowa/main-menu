@@ -30,15 +30,6 @@ struct GameIcon: View {
 struct HomeView: View {
     @EnvironmentObject var app: AppModel
 
-    private var caption: String {
-        guard let g = app.selectedGame else { return "Open the Library to pick one." }
-        var parts: [String] = []
-        if !g.genre.isEmpty { parts.append(g.genre) }
-        parts.append(g.methodSummary)
-        if app.settings.showStats && g.launches > 0 { parts.append("Launched \(g.launches)x") }
-        return parts.joined(separator: " · ")
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 0)
@@ -59,10 +50,9 @@ struct HomeView: View {
                             .id(app.games.count)
                             .onTapGesture { app.tab = .library }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 18)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 22)
                 }
-                .scrollClipDisabled()
                 .onChange(of: app.homeIndex) { _, new in
                     withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(new, anchor: .center) }
                 }
@@ -71,10 +61,6 @@ struct HomeView: View {
             VStack(spacing: 4) {
                 Text(app.selectedGame?.name ?? "Add a game")
                     .font(.system(size: 22, weight: .medium))
-                    .lineLimit(1)
-                Text(caption)
-                    .font(.system(size: 12))
-                    .foregroundStyle(Theme.muted)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity)
