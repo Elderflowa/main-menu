@@ -4,6 +4,17 @@ enum Launcher {
     /// One Shortcut the user creates once. It receives an app name as text and runs Open App with it.
     static let universalShortcut = "Main Menu Launch"
 
+    static let candidates = ["hollowknight", "hollow-knight", "hollowknightmobile", "teamcherry", "hollowknightsilksong", "silksong", "balatro", "playstack", "localthunk", "balatromobile", "tft", "teamfighttactics", "tftmobile", "tacticians", "riot", "riotgames", "riotmobile", "riotclient", "riotid", "lol", "leagueoflegends", "wildrift", "valorant", "lor", "legendsofruneterra", "genshin", "genshinimpact", "hoyoverse", "mihoyo", "hoyolab", "hoyoplay", "hsr", "starrail", "zzz", "netflix", "netflixgames", "unity", "unityads", "gamecenter", "gamecenter-games"]
+
+    /// Which candidate schemes some installed app answers to. Only schemes listed in
+    /// LSApplicationQueriesSchemes can be checked, so this is a guess list, not a scan.
+    @MainActor
+    static func probe() -> [String] {
+        candidates.filter { s in
+            URL(string: s + "://").map { UIApplication.shared.canOpenURL($0) } ?? false
+        }.map { $0 + "://" }
+    }
+
     private static func normalized(_ scheme: String) -> URL? {
         let s = scheme.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !s.isEmpty else { return nil }

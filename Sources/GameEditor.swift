@@ -7,6 +7,8 @@ struct GameEditor: View {
     @State private var alts: String
     @State private var testResult: String?
     private let isNew: Bool
+    @State private var probeResults: [String] = []
+    @State private var probed = false
 
     init(target: EditTarget) {
         _draft = State(initialValue: target.game)
@@ -27,6 +29,23 @@ struct GameEditor: View {
                     }
                     TextField("URL scheme, for example genshin://", text: $draft.uriScheme)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
+                    Button("Find URL schemes on this phone") {
+                        let found = Launcher.probe()
+                        probeResults = found
+                        probed = true
+                    }
+                    if probed {
+                        if probeResults.isEmpty {
+                            Text("No known scheme answered. The app may not have a public one, or it is not in the guess list.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        } else {
+                            Text("Tap one to use it, then Test launch. Several can match other apps, so test each.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                            ForEach(probeResults, id: \.self) { s in
+                                Button(s) { draft.uriScheme = s; draft.method = .urlScheme }
+                            }
+                        }
+                    }
                     TextField("Alternative schemes, comma separated", text: $alts)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     TextField("App name for the Shortcut", text: $draft.shortcutName)

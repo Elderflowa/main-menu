@@ -1,8 +1,11 @@
-## Main Menu 1.2.3
+## Main Menu 1.3.0
 
 A controller-first game launcher for iPhone, built for landscape.
 
-### What's new in 1.2.3
+### What's new in 1.3.0
+- **Find URL schemes on this phone.** In a game's editor, tap the button to check a list of likely schemes (Hollow Knight, Balatro, Riot, HoYoverse and more) and see which ones your installed apps answer to. Tap one to use it, then Test launch. This gives launching without the Shortcut when a game has a hidden scheme.
+
+### Also in 1.2.3
 - **Art you pick by hand now stays.** Automatic art fetching (including "Fetch game art" and saving the API key) never overwrites it. Choose "Use automatic art" in the picker to go back.
 - **My games tab fixed.** It no longer shows catalog rows.
 

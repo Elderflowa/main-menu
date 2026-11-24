@@ -23,6 +23,47 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        LSApplicationQueriesSchemes:
+          - hollowknight
+          - hollow-knight
+          - hollowknightmobile
+          - teamcherry
+          - hollowknightsilksong
+          - silksong
+          - balatro
+          - playstack
+          - localthunk
+          - balatromobile
+          - tft
+          - teamfighttactics
+          - tftmobile
+          - tacticians
+          - riot
+          - riotgames
+          - riotmobile
+          - riotclient
+          - riotid
+          - lol
+          - leagueoflegends
+          - wildrift
+          - valorant
+          - lor
+          - legendsofruneterra
+          - genshin
+          - genshinimpact
+          - hoyoverse
+          - mihoyo
+          - hoyolab
+          - hoyoplay
+          - hsr
+          - starrail
+          - zzz
+          - netflix
+          - netflixgames
+          - unity
+          - unityads
+          - gamecenter
+          - gamecenter-games
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
           UISceneConfigurations:
