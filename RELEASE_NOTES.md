@@ -1,8 +1,11 @@
-## Main Menu 1.2.1
+## Main Menu 1.2.2
 
 A controller-first game launcher for iPhone, built for landscape.
 
-### What's new in 1.2.1
+### What's new in 1.2.2
+- **Touch controls.** Tap a game to launch it. Press and hold a game (on Home or in My games) for a menu with Launch, Edit and Remove.
+
+### Also in 1.2.1
 - **Shortcut setup guide** in Settings, with a one-tap install of the shared `Main Menu Launch` Shortcut, a button to build it yourself, and a test button.
 - The App Store search in the Library now shows what it is doing (searching, number of results, or an error).
 

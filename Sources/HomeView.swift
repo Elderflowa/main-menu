@@ -48,8 +48,11 @@ struct HomeView: View {
                         ForEach(Array(app.games.enumerated()), id: \.element.id) { i, game in
                             GameTile(game: game, selected: i == app.homeIndex, width: app.tileWidth)
                                 .id(i)
-                                .onTapGesture {
-                                    if app.homeIndex == i { app.launch(game) } else { app.homeIndex = i }
+                                .onTapGesture { app.homeIndex = i; app.launch(game) }
+                                .contextMenu {
+                                    Button { app.launch(game) } label: { Label("Launch", systemImage: "play.fill") }
+                                    Button { app.editing = EditTarget(game: game, isNew: false) } label: { Label("Edit", systemImage: "pencil") }
+                                    Button(role: .destructive) { app.delete(game) } label: { Label("Remove", systemImage: "trash") }
                                 }
                         }
                         AddTile(selected: app.homeIndex == app.games.count, width: app.tileWidth)

@@ -86,10 +86,15 @@ struct LibraryView: View {
                                         chip: "Edit", chipOn: false, selected: i == app.libIndex)
                                     .id(i)
                                     .onTapGesture { app.libIndex = i; app.activateLibrary() }
+                                    .contextMenu {
+                                        Button { app.editing = EditTarget(game: g, isNew: false) } label: { Label("Edit", systemImage: "pencil") }
+                                        Button(role: .destructive) { app.delete(g) } label: { Label("Remove", systemImage: "trash") }
+                                    }
                             }
                         }
                     }
                     .padding(.vertical, 4)
+                    .id(app.libraryMode)
                 }
                 .onChange(of: app.libIndex) { _, new in
                     withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(new, anchor: .center) }
