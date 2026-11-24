@@ -30,6 +30,10 @@ Touch works everywhere too. Text fields in the editor and the catalog search nee
 
 Main Menu can fetch poster art for your games from [SteamGridDB](https://www.steamgriddb.com). Create a free API key at steamgriddb.com/profile/preferences/api, then open Settings, choose "SteamGridDB key" and paste it. Art is looked up by game name, shown on the Home tiles, and fetched again whenever you add a game. "Fetch game art" in Settings re-runs the lookup. The key and the image links stay on your device and are never part of this repository.
 
+## Shortcut setup guide
+
+Settings has a "Shortcut setup guide" screen with the four steps for the shared `Main Menu Launch` Shortcut, a button that opens Shortcuts, and a test button that runs it with the Settings app.
+
 ## External display
 
 Plug the phone into a monitor over USB-C (or use AirPlay) and Main Menu renders its own full-screen version on the display, scaled up for the larger screen. While a display is connected, the phone goes to a black standby screen at minimum brightness and stays awake, which saves battery on the OLED panel. Tap the phone to wake it for 20 seconds, for example to use the keyboard. Turn this off with "Dim phone on display" in Settings. When you leave the app to start a game, brightness returns to normal and the display shows your game.

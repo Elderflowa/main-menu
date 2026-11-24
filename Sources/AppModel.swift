@@ -12,7 +12,7 @@ final class AppModel: ObservableObject {
 
     static let shared = AppModel()
     static let columns = 3
-    static let settingsCount = 9
+    static let settingsCount = 10
     static let catalogURL = URL(string: "https://raw.githubusercontent.com/Semmelstulle/ios-uri-schemes/main/game_list.json")!
 
     @Published var tab: Tab = .home
@@ -30,6 +30,7 @@ final class AppModel: ObservableObject {
     @Published var controllerName: String?
     @Published var controllerBattery: Int?
     @Published var keyAlert = false
+    @Published var showGuide = false
     @Published var keyDraft = ""
     @Published var artStatus = "Run"
     @Published var storeResults: [CatalogEntry] = []
@@ -139,12 +140,22 @@ final class AppModel: ObservableObject {
          ("Refresh scheme list", catalogStatus, "arrow.clockwise"),
          ("SteamGridDB key", settings.sgdbKey.isEmpty ? "Not set" : "Set", "key.fill"),
          ("Fetch game art", artStatus, "photo.fill"),
-         ("Dim phone on display", settings.dimOnExternal ? "On" : "Off", "display")]
+         ("Dim phone on display", settings.dimOnExternal ? "On" : "Off", "display"),
+         ("Shortcut setup guide", "Open", "list.number")]
     }
 
     // MARK: Input
 
     func handle(_ input: PadInput) {
+        if showGuide {
+            switch input {
+            case .b, .start: showGuide = false
+            case .a: openShortcutCreator()
+            case .x: testShortcut()
+            default: break
+            }
+            return
+        }
         if editing != nil || keyAlert {
             if input == .b { editing = nil; keyAlert = false }
             return
@@ -247,7 +258,8 @@ final class AppModel: ObservableObject {
             keyDraft = settings.sgdbKey
             keyAlert = true
         case 7: Task { await fetchArt(force: true) }
-        default: settings.dimOnExternal.toggle()
+        case 8: settings.dimOnExternal.toggle()
+        default: showGuide = true
         }
         tick()
     }
@@ -285,6 +297,22 @@ final class AppModel: ObservableObject {
         sleepTask = Task {
             try? await Task.sleep(nanoseconds: 20_000_000_000)
             if !Task.isCancelled { phoneAwake = false; applyPower() }
+        }
+    }
+
+    func openShortcutCreator() {
+        if let url = URL(string: "shortcuts://create-shortcut") { UIApplication.shared.open(url) }
+    }
+
+    /// Runs the shared Shortcut with the Settings app, which every iPhone has.
+    func testShortcut() {
+        Task {
+            let test = Game(name: "Settings", shortcutName: "Settings", method: .shortcut)
+            if await Launcher.launch(test) == nil {
+                showToast(Toast(title: "Couldn't run the Shortcut",
+                                subtitle: "Check that it is named Main Menu Launch.",
+                                symbol: "exclamationmark.triangle.fill", colorHex: "8A2F2F"), seconds: 3)
+            }
         }
     }
 

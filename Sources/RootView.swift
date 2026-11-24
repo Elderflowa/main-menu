@@ -52,6 +52,9 @@ struct MainContent: View {
                 }
                 .padding(.trailing, 4)
             }
+            if app.showGuide {
+                ShortcutGuide()
+            }
             if let t = app.toast {
                 ToastView(toast: t)
                     .transition(.opacity)
