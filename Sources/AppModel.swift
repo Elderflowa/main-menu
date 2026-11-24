@@ -150,8 +150,9 @@ final class AppModel: ObservableObject {
         if showGuide {
             switch input {
             case .b, .start: showGuide = false
-            case .a: openShortcutCreator()
+            case .a: installShortcut()
             case .x: testShortcut()
+            case .y: openShortcutCreator()
             default: break
             }
             return
@@ -297,6 +298,12 @@ final class AppModel: ObservableObject {
         sleepTask = Task {
             try? await Task.sleep(nanoseconds: 20_000_000_000)
             if !Task.isCancelled { phoneAwake = false; applyPower() }
+        }
+    }
+
+    func installShortcut() {
+        if let url = URL(string: "https://www.icloud.com/shortcuts/92e8ce5bf66b4443bb9a1b73baa1bbfa") {
+            UIApplication.shared.open(url)
         }
     }
 

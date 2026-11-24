@@ -32,7 +32,7 @@ Main Menu can fetch poster art for your games from [SteamGridDB](https://www.ste
 
 ## Shortcut setup guide
 
-Settings has a "Shortcut setup guide" screen with the four steps for the shared `Main Menu Launch` Shortcut, a button that opens Shortcuts, and a test button that runs it with the Settings app.
+Settings has a "Shortcut setup guide" screen with the four steps for the shared `Main Menu Launch` Shortcut, a button that installs a ready-made copy from iCloud, a button that opens Shortcuts to build it yourself, and a test button that runs it with the Settings app.
 
 ## External display
 

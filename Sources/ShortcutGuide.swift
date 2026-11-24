@@ -4,6 +4,7 @@ struct ShortcutGuide: View {
     @EnvironmentObject var app: AppModel
 
     private let steps = [
+        "Easiest: install the ready-made Shortcut with A. Otherwise build it yourself:",
         "Open Shortcuts and start a new shortcut.",
         "Name it exactly Main Menu Launch.",
         "Add the action Open App. Tap its app field and choose the Shortcut Input variable.",
@@ -33,8 +34,9 @@ struct ShortcutGuide: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 VStack(spacing: 10) {
-                    guideButton("A", "Open Shortcuts") { app.openShortcutCreator() }
+                    guideButton("A", "Install ready-made Shortcut") { app.installShortcut() }
                     guideButton("X", "Test the Shortcut") { app.testShortcut() }
+                    guideButton("Y", "Open Shortcuts to build it") { app.openShortcutCreator() }
                     guideButton("B", "Close") { app.showGuide = false }
                 }
                 .frame(width: 210)
